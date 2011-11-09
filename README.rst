@@ -1,6 +1,6 @@
-===========================
+=============================
 Question2Answer DB Backup 0.5
-===========================
+=============================
 -----------
 Description
 -----------
@@ -10,7 +10,7 @@ This is a plugin for **Question2Answer** that provides databese backup functiona
 Features
 --------
 - full database or particular Q2A instance export (via admin panel)
-- import tool (via admin panel)
+- database import tool (via admin panel)
 - emergency restore tool
 
 
@@ -25,43 +25,55 @@ Installation
      at the command prompt (on Linux, Windows is a bit different)
    - To download directly, go to the `project page`_ and click **Download**
 
-#. navigate to your site, go to **Admin > Plugins** on your q2a install and go to section '**Database Backup**', then '**Do the backup!**' or '**Import whole database!**'.
+#. Navigate to your site, go to **Admin > Plugins** on your q2a install and go to section '**Database Backup**', then '**Do the backup!**' or '**Import whole database!**'.
 
 .. _Question2Answer: http://www.question2answer.org/install.php
 .. _git: http://git-scm.com/
 .. _github:
 .. _project page: https://github.com/KrzysztofKielce/q2a-backup
 
-----------
+------------------------------
 HOW TO - RESTORE IN A SAFE WAY
-----------
-To avoid data loss, it is always recommended to make restore in a safe way.
-Here are the steps:
-#. Get a backup file on your local disk and manually change table prefixes in that file (e.g. to "qb_").
-   + especially in lines defining database structure: 
-		DROP TABLE IF EXISTS `qa_xxxxx`;
-		CREATE TABLE `qa_xxxxx` (
-		CONSTRAINT `qa_xxxxx_ibfk_1` FOREIGN KEY (`xxxx`) REFERENCES `qa_xxxxxx`
-   + but not inside data lines :
-		('nav_qa_is_home','0'), - DO NOT CHANGE
-		('nav_qa_not_home','0'), - DO NOT CHANGE
+------------------------------
+  To avoid data loss, it is always recommended to make restore in a safe way. Here are the steps:
+
+#. Get a backup file on your local disk and manually change table prefixes in that file (e.g. to `qb_`).
+   - especially in lines defining database structure:
+
+     DROP TABLE IF EXISTS `qa_xxxxx`;
+
+     CREATE TABLE `qa_xxxxx` (
+
+     CONSTRAINT `qa_xxxxx_ibfk_1` FOREIGN KEY (`xxxx`) REFERENCES `qa_xxxxxx`
+
+   - but not inside data lines :
+
+     ('nav_qa_is_home','0'), **- DO NOT CHANGE**
+
+     ('nav_qa_not_home','0'), **- DO NOT CHANGE**.
+
 #. Upload the backup file onto the server via the plugin form (**Admin -> Plugins**, section **Database Backup**).
-[Uploaded file should appear on the list. If not, try uploading the file manually via FTP client, to path "Q2A_ROOT_DIR/qa-content/backup/"].
+
+    [Uploaded file should appear on the list. If not, try uploading the file manually via FTP client, to path "Q2A_ROOT_DIR/qa-content/backup/"].
+
 #. Import database via plugin form.
-#. Edit your qa-config.php file and change your table prefix to that you have changed in the backup file (e.g. "qb_").
+
+#. Edit your qa-config.php file and change your table prefix to that you have changed in the backup file (e.g. `qb_`).
 #. Browse your website and test!
 #. If all's OK, you can import (2.) normal backup file and revert the changes in qa-config.php (4.) to your old table prefix and finally do the import (3.).
 
-----------
+---------------
 TROUBLESHOOTING
-----------
+---------------
 #.
  - Problem: All data is gone.
  - Solution: If you didn't do a backup, you can have a real problem. If you have the backup file: 
+
   + Try uploading it by phpMyAdmin or other panel.
   + Or if you have an access to the command line on your server, you could also import file via mysql utility: 
     On your server open a command line (Windows: Ctrl+R -> cmd) or terminal (Linux: Ctl + Alt + T).
-    Execute a command: **path to mysql_bin_folder**/mysql -u **username_from_config** -p **database_name** --password=**password_from_config** < **import_file_path** e.g. "c:/wamp/bin/mysql/mysql5.5.8/bin/mysql" -u "qasuperuser" -p "qadatabase" --password="admin" < "qa/qa-content/backup/q2afile.sql"
+    Execute a command: **path to mysql_bin_folder**/mysql -u **username_from_config** -p **database_name** --password=**password_from_config** < **import_file_path**
+    e.g. "c:/wamp/bin/mysql/mysql5.5.8/bin/mysql" -u "qasuperuser" -p "qadatabase" --password="admin" < "qa/qa-content/backup/q2afile.sql"
   + Otherwise, please use my emergency restore tool at: '**/qa/qa-plugin/Kielce-backup/emergency.php**' .
 #. 
  - Problem: After import: special characters are not displayed correctly.
@@ -92,4 +104,3 @@ About q2A
 Question2Answer is a free and open source platform for Q&A sites. For more information, visit:
 
 http://www.question2answer.org/
-
