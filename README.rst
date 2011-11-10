@@ -1,5 +1,5 @@
 =============================
-Question2Answer DB Backup 0.5
+Question2Answer Database Backup 0.5a
 =============================
 -----------
 Description
