@@ -235,41 +235,62 @@ class qa_backup {
 			// fclose($file2);
 		
 		$lineNum = 0;
-		$query = "";
-		$line = "";
 		$lineseparator = "\n";
 		$lastIsComment = false;
+		
+		
+		$newLnPos = true;
+		$line = "";
+		$query = "";
 		while ( ! feof( $file ) )
 		{
+			$chunk = "";
 			if ($compressed)
-				$line = gzread($file, 1024);
+				$chunk = gzread($file, 1024);
 			else
-				$line = fgets( $file, 1024);
-			$line = str_replace("\r","",$line);
+				$chunk = fgets( $file, 1024);
+			$chunk = str_replace("\r","",$chunk);
 			
-			
-			$lines = explode($lineseparator,$line);
-			foreach($lines as $lineExpl)
+			do
 			{
-				$lineNum++;
-				$lineExpl = trim($lineExpl," \t");
-				// omit first line (problem was with byte order mark)
-				if ($lineNum>1 && $lineExpl)
+				$newLnPos = strpos($chunk, "\n");
+				if ($newLnPos === 0 || $newLnPos > 0)
 				{
-					if (!$this->startsWith($lineExpl, "--") && !$lastIsComment)
-						$query .= $lineExpl;
-					else
-						$lastIsComment = true;
+					$line .= substr($chunk, 0, $newLnPos);
+					// omit first line (issue with byte order mark)
+					if ($lineNum>0 && $line && !$this->startsWith($line, "--"))
+					{
+						$query .= $line . " ";
+						if ($this->endsWith($line, ";"))
+						{
+							qa_db_query_raw($query); // execute query
+							$query = "";
+						}
+					}
+					$line = "";
+					$lineNum++;
+					
+					$chunk = substr($chunk, $newLnPos+1);
 				}
-				if ($this->endsWith($query, ";"))
+				else
 				{
-					qa_db_query_raw($query);
-					$query = "";
+					$line .= $chunk;
 				}
-			}
-
+			} while($newLnPos === 0 || $newLnPos > 0);
 		}
-			
+		if ($lineNum>0 && $line && !$this->startsWith($line, "--"))
+		{
+			$query .= $line;
+		}
+		if (strlen($query) > 0)
+		{
+			qa_db_query_raw($query); // execute query
+			$query = "";
+		}
+		$line = "";
+		
+		
+		
 		if ($compressed)
 			gzclose($file);
 		else
