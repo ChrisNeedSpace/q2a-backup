@@ -4,7 +4,7 @@ Question2Answer Database Backup 0.5a
 -----------
 Description
 -----------
-This is a plugin for **Question2Answer** that provides databese backup functionality.
+This is a plugin for **Question2Answer** that provides database backup functionality.
 
 --------
 Features
@@ -77,14 +77,14 @@ TROUBLESHOOTING
   + Otherwise, please use my emergency restore tool at: '**/qa/qa-plugin/Kielce-backup/emergency.php**' .
 #. 
  - Problem: After import: special characters are not displayed correctly.
- - Solution: The problem is in character encoding. The default character encoding for tables is UTF8. For this reason the best is to use import files that have the same encoding (utf8). So first, you can check it in some text editor such as Notepad++. Second, please ensure that there is a line at the beginning of imported file: SET NAMES UTF8;
+ - Solution: The problem is in character encoding. The default character encoding for tables is UTF8. For this reason the best is to use import files that have the same encoding (utf8). So first, you can check it in some text editor such as Notepad++. Second, please ensure that there is a line at the beginning of the imported file: SET NAMES UTF8;
 
 #. 
  - Problem: Import - first line issue.
  - Solution: Please ensure that first line of imported file is a comment '--'. In the first line there are some chars that indicate byte order for utf8 file. For some reason these bytes are interpreted as normal text in my parser, so first line must be ignored.
 #.
  - Problem: File doesn't upload.
- - Solution: Try uploading file manually, by some FTP client, e.g. FileZilla. The possible reasons of problem are: too big size (files over 2 MB can be problematic); wrong file type - executables are not available to be uploaded.
+ - Solution: Try uploading file manually, by some FTP client, e.g. FileZilla (to path "Q2A_ROOT_DIR/qa-content/backup/"). The possible reasons of problem are: too big size (files over 2 MB can be problematic); wrong file type - executables are not available to be uploaded.
 
 ----------
 Disclaimer

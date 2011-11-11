@@ -109,7 +109,7 @@ class qa_backup {
 					'tags' => 'NAME="backup_compress_enable"',
 				),
 				array(
-					'label' => 'Backup Q2A tables only (those with `'.QA_MYSQL_TABLE_PREFIX.'` prefix). <br />(If you have more than one instance of Q2A in this database, <br />you can uncheck this option).',
+					'label' => 'Backup Q2A tables only - those with `'.QA_MYSQL_TABLE_PREFIX.'` prefix. <br />If you uncheck this option, you will backup whole batabase. <br />(Useful for more than one Q2A instance in one database).',
 					'type' => 'checkbox',
 					'value' => qa_opt('backup_only_qa_tables_enable'),
 					'tags' => 'NAME="backup_only_qa_tables_enable"',
@@ -132,12 +132,12 @@ class qa_backup {
 			
 			'buttons' => array(
 				array(
-					'label' => 'Do the backup!',
+					'label' => 'Do the backup !',
 					'tags' => 'NAME="backup_export_button" onmouseup="bck_t=\'\'"',
 				),
 				array(
-					'label' => 'Import whole database!',
-					'tags' => 'NAME="backup_import_button" onmouseup="bck_t=\'execute EVERYTHING that is in the selected file, including removal of tables.\nIf you import wrong file, you can have mess in your database or even data loss.\nIt is recommended to make a backup first\'"',
+					'label' => 'Import selected file !',
+					'tags' => 'NAME="backup_import_button" onmouseup="bck_t=\'execute EVERYTHING that is in the selected file. If you import wrong file, you can have mess in your database or even data loss.\nIt is recommended to make a backup first.\n\nNOTE: Backup files done with this plugin delete previous data and then do the import\'"',
 				),
 			),
 		);
@@ -173,7 +173,10 @@ class qa_backup {
 		$ext = qa_opt('backup_compress_enable') ? '.gz' : '.sql';
 		$path .= "/".$this->prefix()."-".date_format(new DateTime(), 'Y_m_d-H_i_s')."-".$this->suffix().$ext;
 		
+		$oldMaintenance = qa_opt('site_maintenance');
+		qa_opt('site_maintenance', 1);
 		$this->getDumper($path)->doDump();
+		qa_opt('site_maintenance', $oldMaintenance);
 	}
 	
 	function doImport()
@@ -198,12 +201,10 @@ class qa_backup {
 			return;
 		}
 		
+		$oldMaintenance = qa_opt('site_maintenance');
+		qa_opt('site_maintenance', 1);
 		$this->launchFile($path, $this->error);
-		
-		//$this->getDumper($path)->doImport($this->error);
-		// $dumper = $this->getDumper($path);
-		// $dumper->setCompress($this->endsWith(strtolower($path), ".gz"));
-		// $dumper->doImport($this->error);
+		qa_opt('site_maintenance', $oldMaintenance);
 	}
 	
 	function launchFile($path, &$error)

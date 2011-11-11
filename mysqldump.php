@@ -240,89 +240,27 @@ class MySQLDump {
 	* Writes to file the selected database dump
 	*/
 	function doDump() {
-		@mysql_query('SET CHARSET UTF8');
-		$this->saveToFile($this->file, pack("CCC",0xef,0xbb,0xbf));
-		$this->saveToFile($this->file,"--\n-- SQLDump backup file. Created by Q2A Database Backup Plugin.\n");
-		$this->saveToFile($this->file,"-- TABLE_PREFIX = `".$this->prefix."`\n--\n\n");
-		$this->saveToFile($this->file,"SET NAMES UTF8;\n\n");
-		$this->saveToFile($this->file,"SET FOREIGN_KEY_CHECKS = 0;\n\n");
-		$this->getDatabaseStructure();
-		$this->getDatabaseData($this->hexValue);
-		$this->saveToFile($this->file,"SET FOREIGN_KEY_CHECKS = 1;\n\n". "-- ");
-		$this->closeFile($this->file);
+		@mysql_query('FLUSH TABLES WITH READ LOCK');
+		try {
+			@mysql_query('SET CHARSET UTF8');
+			$this->saveToFile($this->file, pack("CCC",0xef,0xbb,0xbf));
+			$this->saveToFile($this->file,"--\n-- SQLDump backup file. Created by Q2A Database Backup Plugin.\n");
+			$this->saveToFile($this->file,"-- TABLE_PREFIX = `".$this->prefix."`\n--\n\n");
+			$this->saveToFile($this->file,"SET NAMES UTF8;\n\n");
+			$this->saveToFile($this->file,"SET FOREIGN_KEY_CHECKS = 0;\n\n");
+			$this->getDatabaseStructure();
+			$this->getDatabaseData($this->hexValue);
+			$this->saveToFile($this->file,"SET FOREIGN_KEY_CHECKS = 1;\n\n". "-- ");
+			$this->closeFile($this->file);
+			@mysql_query('UNLOCK TABLES');
+		}
+		catch (Exception $e) {
+			@mysql_query('UNLOCK TABLES');
+			print $e->getMessage(). "<br />";
+		}
 		return true;
 	}
 	
-	// function doImport(&$error)
-	// {
-		// // read the file
-		// //$file = null;
-		
-		// // $compressed = $this->endsWith(strtolower($this->filename), ".gz");
-		// // if (!$compressed)
-			// // $file = gzopen($this->filename, "r");
-		// // else
-			// // $file = fopen($this->filename, "r");
-		// // if(!$file) 
-		// // {
-			// // $error = "Error opening data file: ". $this->filename;
-			// // return;
-		// // }
-		
-		
-		
-		// $size = filesize($this->filename);
-		// if(!$size)
-		// {
-			// $error = "File is empty: ". $this->filename;
-			// return;
-		// }
-		
-		// if ($this->getCompress())
-			// $content = implode('', gzfile($this->filename));
-		// else
-			// $content = fread($this->file,$size);
-		
-		// // debug
-		// // $file2 = fopen($this->filename."a", "w");
-		// // fwrite($file2, $content);
-		// // fclose($file2);
-		
-		
-		// $lineseparator = "\n";
-		// $lines = 0;
-		// $query = "";
-		// foreach(explode($lineseparator,$content) as $line) 
-		// {
-			// $lines++;
-			// $line = trim($line," \t");
-			// $line = str_replace("\r","",$line);
-			
-			// // omit first line (problem was with first byte order characters)
-			// if ($lines>1 && $line && !$this->startsWith($line, "--"))
-				// $query .= $line;
-			// if ($this->endsWith($query, ";"))
-			// {
-				// @mysql_query($query);
-				// //qa_db_query_raw($query);
-				// $query = "";
-			// }
-		// }
-		
-		// $this->closeFile($this->file);
-	// }
-	
-	/**
-	* @deprecated Look at the doDump() method
-	*/
-	function writeDump($filename) {
-		if ( !$this->setOutputFile($filename) )
-			return false;
-		$this->doDump();
-    $this->closeFile($this->file);
-    return true;
-	}
-
   /**
 	* @access private
 	*/
@@ -385,7 +323,10 @@ class MySQLDump {
 	{
 		return (strncmp($string, $search, strlen($search)) == 0);
 	}
-	
+
+  /**
+	* @access private
+	*/	
 	function endsWith($string, $search)
 	{
 		$length = strlen($search);
