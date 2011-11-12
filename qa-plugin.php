@@ -29,7 +29,7 @@
 	Plugin Name: Database Backup
 	Plugin URI: 
 	Plugin Description: Database import/export utility
-	Plugin Version: 0.5b
+	Plugin Version: 0.5c
 	Plugin Date: 2011-10-20
 	Plugin Author: Krzysztof Kielce
 	Plugin License: GPLv2

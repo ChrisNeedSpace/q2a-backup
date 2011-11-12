@@ -1,16 +1,16 @@
 =============================
-Question2Answer Database Backup 0.5b
+Question2Answer Database Backup 0.5c
 =============================
 -----------
 Description
 -----------
-This is a plugin for **Question2Answer** that provides database backup functionality.
+This is a plugin for **Question2Answer** that provides database backup and restore functionality.
 
 --------
 Features
 --------
 - full database or particular Q2A instance export (via admin panel)
-- database import tool (via admin panel)
+- database restore tool (via admin panel)
 - emergency restore tool
 
 
