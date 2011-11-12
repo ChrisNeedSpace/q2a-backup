@@ -99,7 +99,7 @@ All code herein is Copylefted_.
 .. _Copylefted: http://en.wikipedia.org/wiki/Copyleft
 
 ---------
-About q2A
+About Q2A
 ---------
 Question2Answer is a free and open source platform for Q&A sites. For more information, visit:
 
