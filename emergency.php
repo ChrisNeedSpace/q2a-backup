@@ -1,6 +1,6 @@
 <?php
 
-require_once('../../qa-include/qa-recaptchalib.php');
+require_once('qa-recaptchalib.php');
 
 class EmergencyRestore
 {

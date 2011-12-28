@@ -1,14 +1,13 @@
 <?php
 
 /*
-	Question2Answer 1.4.3 (c) 2011, Gideon Greenspan
+	Question2Answer (c) 2011, Gideon Greenspan
 
 	http://www.question2answer.org/
 
 	
 	File: qa-plugin/Kielce-backup/qa-backup.php
-	Version: 1.4.3
-	Date: 2011-11-03 18:06:46 GMT
+	Version: (see qa-plugin.php)
 	Description: Module class for DB Backup plugin
 
 
@@ -62,6 +61,8 @@ class qa_backup {
 		
 		$this->backupDirUrl = $qa_root_url_relative . "qa-content/backup/";
 		$this->backupDir = QA_BASE_DIR."qa-content/backup/";
+		if (!is_dir($this->backupDir))
+			mkdir($this->backupDir, 0755);
 
 		if (qa_clicked('backup_send_upload_file')) {
 			$this->saveChanges();

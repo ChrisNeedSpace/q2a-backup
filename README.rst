@@ -1,6 +1,13 @@
 =============================
-Question2Answer Database Backup 0.5c
+Question2Answer Database Backup 1.0
 =============================
+-----------------------------
+Compatible with Q2A versions:
+-----------------------------
+- 1.5
+- 1.4.3
+- ...others should be okay, yet weren't tested.
+
 -----------
 Description
 -----------

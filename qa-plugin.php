@@ -1,14 +1,14 @@
 <?php
 
 /*
-	Question2Answer 1.4.3 (c) 2011, Gideon Greenspan
+	Question2Answer 1.5 (c) 2011, Gideon Greenspan
 
 	http://www.question2answer.org/
 
 	
 	File: qa-plugin/Kielce-backup/qa-plugin.php
-	Version: 1.4.3
-	Date: 2011-10-20 18:06:46 GMT
+	Version: 1.5
+	Date: 2011-12-28 12:00:00 GMT
 	Description: Initiates Database Backup plugin
 
 
@@ -29,7 +29,7 @@
 	Plugin Name: Database Backup
 	Plugin URI: 
 	Plugin Description: Database import/export utility
-	Plugin Version: 0.5c
+	Plugin Version: 1.0
 	Plugin Date: 2011-10-20
 	Plugin Author: Krzysztof Kielce
 	Plugin License: GPLv2

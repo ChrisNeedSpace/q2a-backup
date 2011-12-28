@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
 * Dump MySQL database
 *
