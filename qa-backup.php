@@ -5,7 +5,7 @@
 
 	http://www.question2answer.org/
 
-	
+
 	File: qa-plugin/Kielce-backup/qa-backup.php
 	Version: (see qa-plugin.php)
 	Description: Module class for DB Backup plugin
@@ -15,7 +15,7 @@
 	modify it under the terms of the GNU General Public License
 	as published by the Free Software Foundation; either version 2
 	of the License, or (at your option) any later version.
-	
+
 	This program is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -25,7 +25,7 @@
 */
 
 class qa_backup {
-	
+
 	var $urltoroot;
 	var $currentUrlDir;
 	var $savedpath = "";
@@ -35,13 +35,13 @@ class qa_backup {
 	var $fileCount = 0;
 	var $listedFiles = "";
 	var $backupDir = "";
-	
+
 	function load_module($directory, $urltoroot)
 	{
 		$this->urltoroot=$urltoroot;
 		$this->currentUrlDir = $directory;
 	}
-	
+
 	function option_default($option)
 	{
 		if ($option=='backup_file_max_size') {
@@ -50,24 +50,30 @@ class qa_backup {
 		if ($option=='backup_only_qa_tables_enable') {
 			return true;
 		}
-		
+
 	}
-	
+
 	function admin_form(&$qa_content)
 	{
 		require_once QA_INCLUDE_DIR.'qa-app-blobs.php';
-				
+
 		global $qa_root_url_relative, $QA_CONST_PATH_MAP;
-		
+
 		$this->backupDirUrl = $qa_root_url_relative . "qa-content/backup/";
 		$this->backupDir = QA_BASE_DIR."qa-content/backup/";
-		if (!is_dir($this->backupDir))
+
+		if (!is_dir($this->backupDir)) {
 			mkdir($this->backupDir, 0755);
+		}
 
 		if (qa_clicked('backup_send_upload_file')) {
+
 			$this->saveChanges();
+
 			if (isset($_FILES["backup_upload_file"]))
+			{
 				$this->uploadFile();
+			}
 		}
 
 		if (qa_clicked('backup_export_button')) {
@@ -88,19 +94,19 @@ class qa_backup {
 			$this->doImport();
 			$this->msg = 'Database Import done';
 		}
-		
-		
+
+
 		return array(
-			 'ok' => $this->error ? '<span style="color:#f00;">ERROR: '.$this->error.'</span>' : ($this->msg ? $this->msg : null),
-			
+			'ok' => $this->error ? '<span style="color:#f00;">ERROR: '.$this->error.'</span>' : ($this->msg ? $this->msg : null),
+		    'tags' => ' method="post" action="'.qa_admin_plugin_options_path(QA_PLUGIN_DIR . QA_BACKUP_PARENT_DIR . "/").'" enctype="multipart/form-data" ', // File upload form tags
 			'fields' => array(
 				array(
 					'label' => $this->listedFiles,
 					'type' => 'static',
-					'value' => '<input type="file" name="backup_upload_file" onmouseout="this.className=\'qa-form-tall-button qa-form-tall-button-0\';" onmouseover="this.className=\'qa-form-tall-hover qa-form-tall-hover-0\';" class="qa-form-tall-button qa-form-tall-button-0" /> '.
-							   '<input type="submit" value="Upload to server" name="backup_send_upload_file" onmouseout="this.className=\'qa-form-tall-button qa-form-tall-button-0\';" onmouseover="this.className=\'qa-form-tall-hover qa-form-tall-hover-0\';" onclick="bck_t=\'\'" class="qa-form-tall-button qa-form-tall-button-0" /><br />'.
-							   '<input type="submit" value="Delete all files" name="backup_delete_files" onmouseout="this.className=\'qa-form-tall-button qa-form-tall-button-0\';" onmouseover="this.className=\'qa-form-tall-hover qa-form-tall-hover-0\';" onclick="bck_t=\'delete all files from a backup folder\'" class="qa-form-tall-button qa-form-tall-button-0" />',
-						
+					'value' => '<input type="file" name="backup_upload_file" class="qa-form-tall-button qa-form-tall-button-0" /> '.
+							   '<input type="submit" value="Upload to server" name="backup_send_upload_file" onclick="bck_t=\'\'" class="qa-form-tall-button qa-form-tall-button-0" /><br />'.
+							   '<input type="submit" value="Delete all files" name="backup_delete_files" onclick="bck_t=\'delete all files from a backup folder\'" class="qa-form-tall-button qa-form-tall-button-0" />',
+
 					'tags' => 'NAME="backup_importFile"',
 				),
 				array(
@@ -130,7 +136,7 @@ class qa_backup {
 					'tags' => 'NAME="backup_import_label"',
 				),
 			),
-			
+
 			'buttons' => array(
 				array(
 					'label' => 'Do the backup !',
@@ -143,14 +149,14 @@ class qa_backup {
 			),
 		);
 	}
-	
+
 	function saveChanges()
 	{
 		qa_opt('backup_compress_enable',(bool)qa_post_text('backup_compress_enable'));
 		qa_opt('backup_only_qa_tables_enable',(bool)qa_post_text('backup_only_qa_tables_enable'));
 		//qa_opt('backup_file_max_size', max(1048576*0.1, 1048576*(float)qa_post_text('backup_file_max_size_field')));
 	}
-	
+
 	function doBackup()
 	{
 		$path = QA_BASE_DIR."qa-content/backup";
@@ -169,17 +175,17 @@ class qa_backup {
 			@fwrite($indexFile, '<?php header(\'Location: ../\'); ?>');
 			@fclose($indexFile);
 		}
-		
-		
+
+
 		$ext = qa_opt('backup_compress_enable') ? '.gz' : '.sql';
 		$path .= "/".$this->prefix()."-".date_format(new DateTime(), 'Y_m_d-H_i_s')."-".$this->suffix().$ext;
-		
+
 		$oldMaintenance = qa_opt('site_maintenance');
 		qa_opt('site_maintenance', 1);
 		$this->getDumper($path)->doDump();
 		qa_opt('site_maintenance', $oldMaintenance);
 	}
-	
+
 	function doImport()
 	{
 		if ($this->fileCount == 0)
@@ -187,38 +193,38 @@ class qa_backup {
 			$this->error = "No files found. Please, upload first.";
 			return;
 		}
-			
+
 		$fileName = qa_post_text('file_name_selected');
 		if (!$fileName)
 		{
 			$this->error = "No files selected. Please, select a file.";
 			return;
 		}
-		
+
 		$path = QA_BASE_DIR."qa-content/backup" . "/" . $fileName;
 		if (!file_exists($path))
 		{
 			$this->error = "File does not exist: ". $path;
 			return;
 		}
-		
+
 		$oldMaintenance = qa_opt('site_maintenance');
 		qa_opt('site_maintenance', 1);
 		$this->launchFile($path, $this->error);
 		qa_opt('site_maintenance', $oldMaintenance);
 	}
-	
+
 	function launchFile($path, &$error)
 	{
 		// read the file
 		$file = null;
-		
+
 		$compressed = $this->endsWith(strtolower($path), ".gz");
 		if ($compressed)
 			$file = gzopen($path, "r");
 		else
 			$file = fopen($path, "r");
-		if(!$file) 
+		if(!$file)
 		{
 			$error = "Error opening data file: ". $path;
 			return;
@@ -230,17 +236,17 @@ class qa_backup {
 			return;
 		}
 
-		
+
 			// debug
 			// $file2 = fopen($path."a", "w");
 			// fwrite($file2, $content);
 			// fclose($file2);
-		
+
 		$lineNum = 0;
 		$lineseparator = "\n";
 		$lastIsComment = false;
-		
-		
+
+
 		$newLnPos = true;
 		$line = "";
 		$query = "";
@@ -252,7 +258,7 @@ class qa_backup {
 			else
 				$chunk = fgets( $file, 1024);
 			$chunk = str_replace("\r","",$chunk);
-			
+
 			do
 			{
 				$newLnPos = strpos($chunk, "\n");
@@ -271,7 +277,7 @@ class qa_backup {
 					}
 					$line = "";
 					$lineNum++;
-					
+
 					$chunk = substr($chunk, $newLnPos+1);
 				}
 				else
@@ -290,15 +296,15 @@ class qa_backup {
 			$query = "";
 		}
 		$line = "";
-		
-		
-		
+
+
+
 		if ($compressed)
 			gzclose($file);
 		else
 			fclose($file);
 	}
-	
+
 	function uploadFile()
 	{
 		if ($_FILES["backup_upload_file"]["size"] > 2*1024*1024) {
@@ -309,19 +315,23 @@ class qa_backup {
 			$this->error = "No files selected. Please, select a file.<br />";
 			return;
 		}
-		if ($_FILES["backup_upload_file"]["type"] != "text/plain" && $_FILES["backup_upload_file"]["type"] != "application/octet-stream") {
-			$this->error = "Wrong file type: ".$_FILES["backup_upload_file"]["type"].". <br />You can only upload text or gz files!";
-			return;
+		if (  $_FILES["backup_upload_file"]["type"] != "text/plain" &&
+		      $_FILES["backup_upload_file"]["type"] != "application/octet-stream" &&
+		      $_FILES["backup_upload_file"]["type"] != "text/x-sql" &&
+		      $_FILES["backup_upload_file"]["type"] != "application/x-gzip") {
+
+    		    $this->error = "Wrong file type: ".$_FILES["backup_upload_file"]["type"].". <br />You can only upload text or gz files!";
+    		    return;
 		}
 		if ($_FILES["backup_upload_file"]["error"]) {
 			$this->error = " code: ".$_FILES["backup_upload_file"]["error"]." - enexpected one...<br />";
 			return;
 		}
-		
-		
+
+
 		$dir = $this->backupDir;
-		
-		
+
+
 		if (file_exists($dir . $_FILES["backup_upload_file"]["name"]))
 			@unlink($dir . $_FILES["backup_upload_file"]["name"]);
 		if (file_exists($dir . $_FILES["backup_upload_file"]["name"]))
@@ -337,7 +347,7 @@ class qa_backup {
 			$this->msg .= "size: " . ceil(($_FILES["backup_upload_file"]["size"] / 1024)) . " KB)<br />";
 		}
 	}
-	
+
 	function doDelete()
 	{
 		$fileArr = $this->getFiles($this->backupDir);
@@ -358,33 +368,33 @@ class qa_backup {
 		else
 			$this->msg = 'Files deleted';
 	}
-	
+
 	function getFiles($dirpath)
 	{
 		$myDirectory = opendir($dirpath);
 
 		while($entryName = readdir($myDirectory))
 			$dirArray[] = $entryName;
-		
+
 		closedir($myDirectory);
 		sort($dirArray);
 
 		$indexCount	= count($dirArray);
-		
+
 		$filesArr = array();
-		for ($index=0; $index < $indexCount; $index++) 
+		for ($index=0; $index < $indexCount; $index++)
 		{
 			if (substr("$dirArray[$index]", 0, 1) != "." // don't list hidden files
 				&& !$this->endsWith($dirArray[$index], "index.php") // ignore index.php
 				&& !is_dir($dirpath.$dirArray[$index])  // don't list directories
 				)
-			{ 
+			{
 				$filesArr[] = $dirArray[$index];
 			}
 		}
 		return $filesArr;
 	}
-	
+
 	function getDumper($path)
 	{
 		require_once('mysqldump.php');
@@ -392,11 +402,11 @@ class qa_backup {
 		return  new MySQLDump(QA_FINAL_MYSQL_DATABASE, $path, qa_opt('backup_compress_enable'), false, $tabPrefix); // db, filepath, compress, hex, table_prefix, bufferSizeKB
 			// , qa_opt('backup_file_max_size')/1024.0
 	}
-	
+
 	function listFiles()
 	{
 		$fileArr = $this->getFiles($this->backupDir);
-		
+
 		$strFiles = "";
 		for ($i=0; $i < count($fileArr); $i++)
 		{
@@ -405,7 +415,7 @@ class qa_backup {
 						 "</input><br />";
 		}
 		$this->fileCount = count($fileArr);
-		
+
 		$res = "";
 		if ($this->fileCount > 0)
 		{
@@ -424,7 +434,7 @@ class qa_backup {
 		$number = ceil($number/1024);
 		return number_format($number, 0, ",", " ")." KB";
 	}
-	
+
 	function getDir($path)
 	{
 		$res = "";
@@ -437,19 +447,19 @@ class qa_backup {
 			$res = substr($path, 0, $maxSlash+1);
 		return $res;
 	}
-	
+
 	function startsWith($string, $search)
 	{
 		return (strncmp($string, $search, strlen($search)) == 0);
 	}
-	
+
 	function endsWith($string, $search)
 	{
 		$length = strlen($search);
 		$start  = $length * -1; //negative
 		return (substr($string, $start) === $search);
 	}
-	
+
 	function prefix()
 	{
 		$prefix = qa_opt('site_title');
@@ -460,18 +470,18 @@ class qa_backup {
 			$prefix = "q2a";
 		return $prefix;
 	}
-	
+
 	function suffix()
 	{
 		return substr(md5(microtime()), 0, 5);
 	}
-	
+
 	function bytes_to_mega_html($bytes)
 	{
 		return qa_html(number_format($bytes/1048576, 1));
 	}
 };
-	
+
 
 /*
 	Omit PHP closing tag to help avoid accidental output
